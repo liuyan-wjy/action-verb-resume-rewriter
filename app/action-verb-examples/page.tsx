@@ -1,10 +1,14 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { SchemaScript } from '@/components/SchemaScript';
+import { buildPageMetadata, SITE_URL } from '@/lib/seo';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: 'Action Verb Examples',
-  description: 'Before and after action verb examples for resume bullets across common job functions.'
-};
+  description: 'Before and after action verb examples for resume bullets across common job functions.',
+  path: '/action-verb-examples',
+  keywords: ['action verb examples for resume', 'resume bullet examples', 'resume rewrite examples']
+});
 
 const examples = [
   {
@@ -23,11 +27,32 @@ const examples = [
     before: 'Did social media posts.',
     after: 'Executed channel-specific social content plans that improved consistency and campaign reach.'
   }
-];
+] as const;
 
 export default function ActionVerbExamplesPage() {
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: SITE_URL
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Action Verb Examples',
+        item: `${SITE_URL}/action-verb-examples`
+      }
+    ]
+  };
+
   return (
     <div className="stack-xl">
+      <SchemaScript data={breadcrumbSchema} />
+
       <section className="card stack-md">
         <h1>Action Verb Examples for Resume Bullets</h1>
         <p>

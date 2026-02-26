@@ -1,13 +1,27 @@
 import type { Metadata } from 'next';
+import { SchemaScript } from '@/components/SchemaScript';
+import { buildPageMetadata, SITE_NAME, SITE_URL } from '@/lib/seo';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: 'About Us',
-  description: 'Learn about PowerVerb and our mission.'
-};
+  description: 'Learn about PowerVerb and our mission.',
+  path: '/about',
+  keywords: ['about powerverb', 'resume rewriter company']
+});
 
 export default function AboutPage() {
+  const organizationSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: SITE_NAME,
+    url: SITE_URL,
+    email: '2471662450@qq.com'
+  };
+
   return (
     <div className="stack-xl">
+      <SchemaScript data={organizationSchema} />
+
       <section className="card stack-md">
         <h1>About PowerVerb</h1>
         <p>

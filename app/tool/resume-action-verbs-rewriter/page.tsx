@@ -1,10 +1,13 @@
 import type { Metadata } from 'next';
 import { RewriterPanel } from '@/components/RewriterPanel';
+import { buildPageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: 'Resume Bullet Rewriter Tool',
-  description: 'Rewrite one resume bullet into three action-verb versions with ATS-friendly structure.'
-};
+  description: 'Rewrite one resume bullet into three action-verb versions with ATS-friendly structure.',
+  path: '/tool/resume-action-verbs-rewriter',
+  keywords: ['resume bullet rewriter', 'ats resume rewriter', 'rewrite resume bullet']
+});
 
 export default function ResumeToolPage() {
   return (

@@ -1,9 +1,12 @@
 import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: 'Privacy Policy',
-  description: 'How PowerVerb collects, uses, and protects your data.'
-};
+  description: 'How PowerVerb collects, uses, and protects your data.',
+  path: '/privacy-policy',
+  keywords: ['privacy policy', 'powerverb privacy']
+});
 
 export default function PrivacyPolicyPage() {
   return (

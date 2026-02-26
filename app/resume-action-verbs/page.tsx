@@ -1,15 +1,40 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { seoVerbCategories } from '@/lib/verb-bank';
+import { SchemaScript } from '@/components/SchemaScript';
+import { buildPageMetadata, SITE_URL } from '@/lib/seo';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: 'Resume Action Verbs',
-  description: 'Resume action verbs organized by role and writing intent to help improve ATS clarity and impact.'
-};
+  description: 'Resume action verbs organized by role and writing intent to help improve ATS clarity and impact.',
+  path: '/resume-action-verbs',
+  keywords: ['resume action verbs', 'resume bullet verbs', 'ats resume language']
+});
 
 export default function ResumeActionVerbsPage() {
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: SITE_URL
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Resume Action Verbs',
+        item: `${SITE_URL}/resume-action-verbs`
+      }
+    ]
+  };
+
   return (
     <div className="stack-xl">
+      <SchemaScript data={breadcrumbSchema} />
+
       <section className="card stack-md">
         <h1>Resume Action Verbs</h1>
         <p>

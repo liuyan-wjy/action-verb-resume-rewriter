@@ -1,15 +1,14 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { PaymentSuccessClient } from '@/app/payment/success/client';
+import { buildPageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: 'Payment Success',
   description: 'Payment confirmation page for PowerVerb credits.',
-  robots: {
-    index: false,
-    follow: false
-  }
-};
+  path: '/payment/success',
+  noIndex: true
+});
 
 export default function PaymentSuccessPage() {
   return (

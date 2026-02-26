@@ -1,10 +1,13 @@
 import type { Metadata } from 'next';
 import { AuthButton } from '@/components/AuthButton';
+import { buildPageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: 'Login',
-  description: 'Sign in with Google to sync credits and purchase history.'
-};
+  description: 'Sign in with Google to sync credits and purchase history.',
+  path: '/login',
+  noIndex: true
+});
 
 export default function LoginPage() {
   return (

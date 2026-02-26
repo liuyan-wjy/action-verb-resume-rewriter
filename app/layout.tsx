@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Bebas_Neue, Source_Sans_3 } from 'next/font/google';
 import './globals.css';
 import { NavBar } from '@/components/NavBar';
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/seo';
 
 const headingFont = Bebas_Neue({
   subsets: ['latin'],
@@ -15,12 +16,34 @@ const bodyFont = Source_Sans_3({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Action Verb Resume Rewriter',
-    template: '%s | Action Verb Resume Rewriter'
+    default: SITE_NAME,
+    template: `%s | ${SITE_NAME}`
   },
-  description:
-    'Rewrite weak resume bullets into action-verb, ATS-friendly statements with role-specific tone and quantification hints.'
+  description: SITE_DESCRIPTION,
+  keywords: [
+    'action verbs for resume',
+    'resume action verbs',
+    'resume bullet rewriter',
+    'ats resume bullets',
+    'power verbs for resume'
+  ],
+  alternates: {
+    canonical: '/'
+  },
+  openGraph: {
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    type: 'website'
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION
+  }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
