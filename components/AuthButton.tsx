@@ -6,8 +6,6 @@ import type { User } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/client';
 
 export function AuthButton() {
-  const [user, setUser] = useState<User | null>(null);
-  const [ready, setReady] = useState(false);
   const supabase = useMemo(() => {
     try {
       return createClient();
@@ -15,10 +13,11 @@ export function AuthButton() {
       return null;
     }
   }, []);
+  const [user, setUser] = useState<User | null>(null);
+  const [ready, setReady] = useState(!supabase);
 
   useEffect(() => {
     if (!supabase) {
-      setReady(true);
       return;
     }
 
