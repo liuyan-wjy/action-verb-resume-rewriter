@@ -4,8 +4,9 @@ import { SchemaScript } from '@/components/SchemaScript';
 import { buildPageMetadata, SITE_URL } from '@/lib/seo';
 
 export const metadata: Metadata = buildPageMetadata({
-  title: 'Action Verb Examples',
-  description: 'Before and after action verb examples for resume bullets across common job functions.',
+  title: 'Action Verb Examples for Resume (Before vs After)',
+  description:
+    'See action verb examples for resume bullets with before-and-after rewrites. Learn how to replace weak wording without exaggeration.',
   path: '/action-verb-examples',
   keywords: ['action verb examples for resume', 'resume bullet examples', 'resume rewrite examples']
 });
@@ -56,7 +57,7 @@ export default function ActionVerbExamplesPage() {
       <section className="card stack-md">
         <h1>Action Verb Examples for Resume Bullets</h1>
         <p>
-          Use these examples to upgrade weak phrasing. Keep the facts, strengthen the verb, and surface impact.
+          Use these action verb examples to upgrade weak phrasing. Keep the facts, strengthen the verb, and surface impact.
         </p>
       </section>
 
@@ -74,6 +75,11 @@ export default function ActionVerbExamplesPage() {
       </section>
 
       <section className="card stack-md">
+        <h2>Turn your own bullets into strong action statements</h2>
+        <p>
+          If your current bullets start with generic language, paste them into the tool and compare three tone options. This helps
+          you quickly choose phrasing that matches your target role.
+        </p>
         <p>
           Need custom rewrites for your role? <Link href="/tool/resume-action-verbs-rewriter">Try the tool</Link>.
         </p>

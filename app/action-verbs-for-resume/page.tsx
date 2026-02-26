@@ -5,8 +5,9 @@ import { SchemaScript } from '@/components/SchemaScript';
 import { buildPageMetadata, SITE_URL } from '@/lib/seo';
 
 export const metadata: Metadata = buildPageMetadata({
-  title: 'Action Verbs for Resume',
-  description: 'A categorized list of action verbs for resume bullet points, plus usage guidance and examples.',
+  title: 'Action Verbs for Resume: Power Verbs + Free Rewriter',
+  description:
+    'Browse action verbs for resume bullets by category and upgrade weak phrasing. Includes power verb examples and a free AI bullet rewriter.',
   path: '/action-verbs-for-resume',
   keywords: ['action verbs for resume', 'power verbs for resume', 'resume wording']
 });
@@ -69,8 +70,8 @@ export default function ActionVerbsForResumePage() {
       <section className="card stack-md">
         <h1>Action Verbs for Resume</h1>
         <p>
-          Use this list when you need stronger opening words than “responsible for” or “helped”. Pick verbs that match your role,
-          then back them with clear scope and outcomes.
+          Use this action verbs for resume list when you need stronger opening words than “responsible for” or “helped”. Pick verbs
+          that match your role, then back them with clear scope and outcomes.
         </p>
         <p>
           Need instant rewrites? Use the <Link href="/tool/resume-action-verbs-rewriter">Action Verb Resume Rewriter tool</Link>.
@@ -78,6 +79,18 @@ export default function ActionVerbsForResumePage() {
       </section>
 
       <VerbCategoryGrid />
+
+      <section className="card stack-md">
+        <h2>How to choose the right power verb</h2>
+        <p>
+          Choose verbs that match your actual level of ownership. For example, use “Led” only when you directed work; use
+          “Coordinated” when you facilitated execution across teams.
+        </p>
+        <p>
+          You can also compare alternatives in our <Link href="/resume-action-verbs">resume action verbs guide</Link> and see
+          realistic <Link href="/action-verb-examples">before-and-after examples</Link>.
+        </p>
+      </section>
 
       <section className="card stack-md">
         <h2>Common Questions</h2>

@@ -5,8 +5,9 @@ import { SchemaScript } from '@/components/SchemaScript';
 import { buildPageMetadata, SITE_URL } from '@/lib/seo';
 
 export const metadata: Metadata = buildPageMetadata({
-  title: 'Resume Action Verbs',
-  description: 'Resume action verbs organized by role and writing intent to help improve ATS clarity and impact.',
+  title: 'Resume Action Verbs by Role (ATS-Friendly Guide)',
+  description:
+    'Find resume action verbs by role and writing intent. Improve ATS clarity, avoid repetition, and write stronger bullet points.',
   path: '/resume-action-verbs',
   keywords: ['resume action verbs', 'resume bullet verbs', 'ats resume language']
 });
@@ -36,9 +37,9 @@ export default function ResumeActionVerbsPage() {
       <SchemaScript data={breadcrumbSchema} />
 
       <section className="card stack-md">
-        <h1>Resume Action Verbs</h1>
+        <h1>Resume Action Verbs by Role</h1>
         <p>
-          Start each bullet with a precise verb. Then describe what you changed, who was affected, and what improved.
+          Start each bullet with a precise action verb. Then describe what you changed, who was affected, and what improved.
         </p>
       </section>
 
@@ -63,6 +64,11 @@ export default function ResumeActionVerbsPage() {
       </section>
 
       <section className="card stack-md">
+        <h2>Avoid keyword cannibalization in your own resume</h2>
+        <p>
+          Repeating the same lead verb too often makes bullets blur together. Rotate verbs across bullets so each line signals a
+          distinct contribution (leadership, execution, analysis, or impact).
+        </p>
         <p>
           Want tailored rewrites by role and tone? <Link href="/tool/resume-action-verbs-rewriter">Open the rewriter</Link>.
         </p>

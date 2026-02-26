@@ -3,8 +3,9 @@ import { RewriterPanel } from '@/components/RewriterPanel';
 import { buildPageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = buildPageMetadata({
-  title: 'Resume Bullet Rewriter Tool',
-  description: 'Rewrite one resume bullet into three action-verb versions with ATS-friendly structure.',
+  title: 'Free Resume Bullet Rewriter Tool (Action Verbs)',
+  description:
+    'Rewrite one resume bullet into three ATS-friendly action-verb versions. Keep your facts and improve clarity, tone, and impact.',
   path: '/tool/resume-action-verbs-rewriter',
   keywords: ['resume bullet rewriter', 'ats resume rewriter', 'rewrite resume bullet']
 });
