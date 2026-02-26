@@ -30,12 +30,15 @@
 | `/` | action verbs for resume | resume bullet rewriter, resume action verbs, power verbs for resume | 混合意图（信息+工具） | Action Verbs + Free AI Rewriter | 导向工具页、词库页、示例页 |
 | `/tool/resume-action-verbs-rewriter` | resume bullet rewriter | ats resume rewriter, rewrite resume bullet | 工具意图 | Free Resume Bullet Rewriter Tool | 回链到词库页与示例页 |
 | `/action-verbs-for-resume` | action verbs for resume | power verbs for resume, resume wording | 信息意图（词库） | Power Verbs + Free Rewriter | 导向工具页、`/resume-action-verbs`、`/action-verb-examples` |
-| `/resume-action-verbs` | resume action verbs | resume bullet verbs, ats resume language | 信息意图（分角色） | By Role + ATS Guide | 导向工具页、词库页、3个长尾页 |
+| `/resume-action-verbs` | resume action verbs | resume bullet verbs, ats resume language | 信息意图（分角色） | By Role + ATS Guide | 导向工具页、词库页、6个长尾页 |
 | `/action-verb-examples` | action verb examples for resume | resume rewrite examples, resume bullet examples | 信息意图（案例） | Before vs After | 导向工具页 |
 | `/pricing` | resume rewriter pricing | resume tool credits, resume subscription | 商业意图 | Pricing / Credits / Pro | 导向登录与工具页 |
 | `/resume-action-verbs-for-customer-service` | resume action verbs for customer service | customer service resume verbs, customer support resume bullet examples | 长尾信息意图（角色） | Role-specific guide | 导向工具页与核心词库页 |
 | `/resume-action-verbs-for-project-manager` | resume action verbs for project manager | project manager resume verbs, project management bullet examples | 长尾信息意图（角色） | Role-specific guide | 导向工具页与核心词库页 |
 | `/resume-action-verbs-for-marketing` | resume action verbs for marketing | marketing resume verbs, marketing resume bullet examples | 长尾信息意图（角色） | Role-specific guide | 导向工具页与核心词库页 |
+| `/resume-action-verbs-for-sales` | resume action verbs for sales | sales resume verbs, sales resume bullet examples | 长尾信息意图（角色） | Role-specific guide | 导向工具页与核心词库页 |
+| `/resume-action-verbs-for-product-manager` | resume action verbs for product manager | product manager resume verbs, pm resume bullet examples | 长尾信息意图（角色） | Role-specific guide | 导向工具页与核心词库页 |
+| `/resume-action-verbs-for-software-engineer` | resume action verbs for software engineer | software engineer resume verbs, engineering resume bullet examples | 长尾信息意图（角色） | Role-specific guide | 导向工具页与核心词库页 |
 
 ## 3) 关键词映射规则（避免互相抢词）
 - 每个核心页面只绑定 1 个主关键词（Primary）。
@@ -45,7 +48,7 @@
 
 ## 4) 下一轮建议
 - 基于 GSC 数据，继续扩展 3 个长尾页：
-  - `/resume-action-verbs-for-sales`
-  - `/resume-action-verbs-for-product-manager`
-  - `/resume-action-verbs-for-software-engineer`
+  - `/resume-action-verbs-for-operations`
+  - `/resume-action-verbs-for-finance`
+  - `/resume-action-verbs-for-human-resources`
 - 每页绑定独立 primary，避免与现有页面互抢。

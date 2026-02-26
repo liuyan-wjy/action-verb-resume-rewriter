@@ -84,6 +84,24 @@ export default function ResumeActionVerbsPage() {
             </h3>
             <p>Show campaign execution, optimization, and growth outcomes.</p>
           </article>
+          <article className="mini-card stack-sm">
+            <h3>
+              <Link href="/resume-action-verbs-for-sales">Resume Action Verbs for Sales</Link>
+            </h3>
+            <p>Emphasize pipeline creation, deal motion, and revenue impact.</p>
+          </article>
+          <article className="mini-card stack-sm">
+            <h3>
+              <Link href="/resume-action-verbs-for-product-manager">Resume Action Verbs for Product Manager</Link>
+            </h3>
+            <p>Highlight prioritization quality, product launches, and customer impact.</p>
+          </article>
+          <article className="mini-card stack-sm">
+            <h3>
+              <Link href="/resume-action-verbs-for-software-engineer">Resume Action Verbs for Software Engineer</Link>
+            </h3>
+            <p>Show technical depth, optimization work, and reliability improvements.</p>
+          </article>
         </div>
       </section>
 

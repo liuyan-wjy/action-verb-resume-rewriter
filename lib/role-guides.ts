@@ -1,5 +1,5 @@
 export interface RoleGuideData {
-  slug: 'customer-service' | 'project-manager' | 'marketing';
+  slug: 'customer-service' | 'project-manager' | 'marketing' | 'sales' | 'product-manager' | 'software-engineer';
   title: string;
   description: string;
   path: string;
@@ -133,6 +133,129 @@ export const roleGuides: RoleGuideData[] = [
       {
         q: 'Can marketing bullets be ATS-friendly and still persuasive?',
         a: 'Yes. Keep bullets concise, role-specific, and measurable while avoiding inflated claims.'
+      }
+    ]
+  },
+  {
+    slug: 'sales',
+    title: 'Resume Action Verbs for Sales',
+    description:
+      'Use sales resume action verbs to show pipeline generation, deal progression, quota attainment, and account growth.',
+    path: '/resume-action-verbs-for-sales',
+    primaryKeyword: 'resume action verbs for sales',
+    secondaryKeywords: ['sales resume verbs', 'sales resume bullet examples'],
+    intro:
+      'Sales resumes should show revenue impact and execution consistency. Use verbs that reflect pipeline ownership, deal motion, and account expansion outcomes.',
+    verbList: ['Prospected', 'Qualified', 'Closed', 'Expanded', 'Negotiated', 'Exceeded', 'Retained', 'Converted'],
+    bulletExamples: [
+      {
+        weak: 'Helped with outbound sales.',
+        strong: 'Prospected target accounts through outbound sequences and qualified high-fit opportunities for pipeline growth.'
+      },
+      {
+        weak: 'Worked on enterprise renewals.',
+        strong: 'Negotiated renewal terms with enterprise accounts and retained strategic revenue during contract cycles.'
+      },
+      {
+        weak: 'Did demo follow-ups.',
+        strong: 'Converted post-demo interest into active opportunities through structured follow-up and objection handling.'
+      }
+    ],
+    tips: [
+      'Use outcome verbs tied to sales motion: prospected, closed, expanded, retained.',
+      'Anchor bullets to realistic sales metrics (quota attainment, win rate trend, pipeline volume).',
+      'Differentiate new business achievements from expansion or renewal work.'
+    ],
+    faq: [
+      {
+        q: 'What are strong action verbs for sales resumes?',
+        a: 'Common high-signal sales verbs include Prospected, Qualified, Closed, Expanded, Negotiated, and Exceeded.'
+      },
+      {
+        q: 'How should I quantify sales resume bullets?',
+        a: 'Use credible metrics like quota attainment, pipeline contribution, renewal rate, average deal size, or retention outcomes.'
+      }
+    ]
+  },
+  {
+    slug: 'product-manager',
+    title: 'Resume Action Verbs for Product Manager',
+    description:
+      'Use product manager resume action verbs to show product strategy, prioritization, cross-functional execution, and measurable outcomes.',
+    path: '/resume-action-verbs-for-product-manager',
+    primaryKeyword: 'resume action verbs for product manager',
+    secondaryKeywords: ['product manager resume verbs', 'pm resume bullet examples'],
+    intro:
+      'Product manager resumes should communicate strategic thinking and delivery leadership. Choose verbs that show prioritization rigor, stakeholder alignment, and customer impact.',
+    verbList: ['Defined', 'Prioritized', 'Launched', 'Validated', 'Aligned', 'Drove', 'Scoped', 'Improved'],
+    bulletExamples: [
+      {
+        weak: 'Responsible for product roadmap.',
+        strong: 'Defined roadmap priorities using customer feedback, business goals, and engineering constraints.'
+      },
+      {
+        weak: 'Worked with teams on launches.',
+        strong: 'Aligned cross-functional teams and launched product increments with clear release criteria.'
+      },
+      {
+        weak: 'Helped improve onboarding flow.',
+        strong: 'Validated onboarding hypotheses through experiment analysis and improved activation flow clarity.'
+      }
+    ],
+    tips: [
+      'Use PM-specific verbs that show decision quality: defined, prioritized, validated, aligned.',
+      'State what decisions you drove and why they mattered to users or business metrics.',
+      'Avoid vague ownership language without product context.'
+    ],
+    faq: [
+      {
+        q: 'Which action verbs are best for product manager resumes?',
+        a: 'Strong PM verbs include Defined, Prioritized, Launched, Validated, Aligned, and Improved.'
+      },
+      {
+        q: 'How can PM bullets stay ATS-friendly?',
+        a: 'Use concise decision-oriented language, role-relevant terminology, and measurable outcomes when possible.'
+      }
+    ]
+  },
+  {
+    slug: 'software-engineer',
+    title: 'Resume Action Verbs for Software Engineer',
+    description:
+      'Use software engineer resume action verbs to show architecture work, code quality improvements, performance optimization, and reliability impact.',
+    path: '/resume-action-verbs-for-software-engineer',
+    primaryKeyword: 'resume action verbs for software engineer',
+    secondaryKeywords: ['software engineer resume verbs', 'engineering resume bullet examples'],
+    intro:
+      'Software engineer resumes should demonstrate technical depth and shipping impact. Pick verbs that communicate build quality, performance gains, and system reliability improvements.',
+    verbList: ['Engineered', 'Built', 'Refactored', 'Optimized', 'Automated', 'Scaled', 'Debugged', 'Hardened'],
+    bulletExamples: [
+      {
+        weak: 'Worked on backend services.',
+        strong: 'Engineered backend services for high-throughput workloads and improved request handling reliability.'
+      },
+      {
+        weak: 'Helped with codebase cleanup.',
+        strong: 'Refactored legacy modules to reduce complexity and improve maintainability across release cycles.'
+      },
+      {
+        weak: 'Did CI/CD updates.',
+        strong: 'Automated CI/CD workflows to shorten release cycles and reduce manual deployment errors.'
+      }
+    ],
+    tips: [
+      'Use technical execution verbs: engineered, refactored, optimized, automated, scaled.',
+      'Include architecture or system context to clarify complexity and scope.',
+      'Tie engineering work to business-facing impact when possible.'
+    ],
+    faq: [
+      {
+        q: 'What are strong action verbs for software engineer resumes?',
+        a: 'Strong engineering verbs include Engineered, Built, Refactored, Optimized, Automated, and Scaled.'
+      },
+      {
+        q: 'Should engineering bullets include metrics?',
+        a: 'Yes. Use real measurements like latency reduction, throughput gains, uptime improvements, or deployment frequency changes.'
       }
     ]
   }
