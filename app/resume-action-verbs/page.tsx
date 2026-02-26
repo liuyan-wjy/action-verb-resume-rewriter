@@ -64,6 +64,30 @@ export default function ResumeActionVerbsPage() {
       </section>
 
       <section className="card stack-md">
+        <h2>Role-specific long-tail guides</h2>
+        <div className="stack-sm">
+          <article className="mini-card stack-sm">
+            <h3>
+              <Link href="/resume-action-verbs-for-customer-service">Resume Action Verbs for Customer Service</Link>
+            </h3>
+            <p>Focus on resolution, de-escalation, and customer retention language.</p>
+          </article>
+          <article className="mini-card stack-sm">
+            <h3>
+              <Link href="/resume-action-verbs-for-project-manager">Resume Action Verbs for Project Manager</Link>
+            </h3>
+            <p>Highlight planning, stakeholder alignment, and delivery control.</p>
+          </article>
+          <article className="mini-card stack-sm">
+            <h3>
+              <Link href="/resume-action-verbs-for-marketing">Resume Action Verbs for Marketing</Link>
+            </h3>
+            <p>Show campaign execution, optimization, and growth outcomes.</p>
+          </article>
+        </div>
+      </section>
+
+      <section className="card stack-md">
         <h2>Avoid keyword cannibalization in your own resume</h2>
         <p>
           Repeating the same lead verb too often makes bullets blur together. Rotate verbs across bullets so each line signals a
