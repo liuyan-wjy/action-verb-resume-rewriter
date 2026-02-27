@@ -1,4 +1,6 @@
 import { getVerbSuggestions } from './verb-bank';
+import { resolveVerbFamily } from './rule-dictionaries';
+import { toVerbRoot } from './text-normalize';
 import type { UserRole } from './types';
 
 export interface RepetitionIssue {
@@ -19,7 +21,7 @@ function extractLeadVerb(line: string): string | null {
     return null;
   }
 
-  return cleaned[0].toLowerCase();
+  return toVerbRoot(cleaned[0]);
 }
 
 export function findRepetitionIssues(rawText: string, role: UserRole = 'general'): RepetitionIssue[] {
@@ -29,19 +31,31 @@ export function findRepetitionIssues(rawText: string, role: UserRole = 'general'
     .filter(Boolean);
 
   const counts = new Map<string, number>();
+  const labels = new Map<string, string>();
 
   for (const line of lines) {
     const verb = extractLeadVerb(line);
     if (!verb) {
       continue;
     }
-    counts.set(verb, (counts.get(verb) ?? 0) + 1);
+
+    const family = resolveVerbFamily(verb);
+    const canonical = family?.key ?? verb;
+    counts.set(canonical, (counts.get(canonical) ?? 0) + 1);
+
+    if (!labels.has(canonical)) {
+      labels.set(canonical, canonical);
+    }
   }
 
   return Array.from(counts.entries())
     .filter(([, count]) => count > 1)
-    .map(([verb, count]) => {
-      const alternatives = getVerbSuggestions(role, undefined, [verb]).slice(0, 4);
-      return { verb, count, alternatives };
+    .map(([canonical, count]) => {
+      const family = resolveVerbFamily(canonical);
+      const familyMembers = family?.members ?? [canonical];
+      const familyAlternatives = family?.alternatives ?? [];
+      const roleAlternatives = getVerbSuggestions(role, undefined, familyMembers).slice(0, 8);
+      const alternatives = Array.from(new Set([...familyAlternatives, ...roleAlternatives])).slice(0, 4);
+      return { verb: labels.get(canonical) ?? canonical, count, alternatives };
     });
 }

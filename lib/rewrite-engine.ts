@@ -1,5 +1,6 @@
 import { getVerbSuggestions } from './verb-bank';
 import { detectWeakMatches, stripLeadingWeakPhrase } from './weak-verbs';
+import { weakVerbReplacements } from './rule-dictionaries';
 import type { RewriteRequest, RewriteResponse, RewriteVariation, Tone } from './types';
 
 const toneOrder: Tone[] = ['leadership', 'execution', 'impact'];
@@ -134,7 +135,9 @@ export function localRewrite(payload: RewriteRequest): RewriteResponse {
   const role = payload.role ?? 'general';
   const selectedTone = payload.tone;
   const weakMatches = detectWeakMatches(payload.text);
-  const suggestions = getVerbSuggestions(role, selectedTone, []);
+  const ruleBasedSuggestions = weakMatches.flatMap((match) => weakVerbReplacements(match.split(/\s+/)[0] ?? match));
+  const bankSuggestions = getVerbSuggestions(role, selectedTone, []);
+  const suggestions = Array.from(new Set([...ruleBasedSuggestions, ...bankSuggestions])).slice(0, 10);
 
   const tones = selectedTone ? [selectedTone, ...toneOrder.filter((tone) => tone !== selectedTone)] : toneOrder;
 

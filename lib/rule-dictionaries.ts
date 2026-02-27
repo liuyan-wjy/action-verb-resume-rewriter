@@ -1,0 +1,256 @@
+import { normalizeToken, toVerbRoot } from './text-normalize';
+
+// Maintained weak language set (phrases + verbs) for deterministic detection.
+// Total entries intentionally large to cover common resume anti-patterns.
+export const WEAK_PHRASES: string[] = [
+  'responsible for',
+  'in charge of',
+  'tasked with',
+  'worked on',
+  'worked with',
+  'worked closely with',
+  'worked alongside',
+  'worked across',
+  'helped',
+  'helped with',
+  'helped out with',
+  'assisted',
+  'assisted with',
+  'supported',
+  'supported with',
+  'provided support for',
+  'provided assistance to',
+  'contributed to',
+  'was involved in',
+  'involved in',
+  'participated in',
+  'took part in',
+  'exposed to',
+  'familiar with',
+  'knowledge of',
+  'experience with',
+  'worked under',
+  'was part of',
+  'served as',
+  'acted as',
+  'handled',
+  'handled various',
+  'handled multiple',
+  'managed to',
+  'had to',
+  'was able to',
+  'tried to',
+  'attempted to',
+  'looked after',
+  'looked into',
+  'dealt with',
+  'dealt in',
+  'did',
+  'did work on',
+  'did tasks related to',
+  'made',
+  'made sure',
+  'made use of',
+  'used',
+  'utilized',
+  'leveraged',
+  'performed',
+  'performed duties',
+  'performed tasks',
+  'completed tasks',
+  'carried out',
+  'was tasked to',
+  'was assigned to',
+  'had responsibility for',
+  'had ownership of',
+  'oversaw day to day',
+  'took care of',
+  'played a role in',
+  'played a key role in',
+  'was instrumental in',
+  'contributed significantly to',
+  'collaborated on',
+  'collaborated with',
+  'coordinated with',
+  'communicated with',
+  'interfaced with',
+  'liaised with',
+  'reported on',
+  'worked to improve',
+  'helped improve',
+  'helped reduce',
+  'helped increase',
+  'helped drive',
+  'supported implementation of',
+  'supported development of',
+  'supported rollout of',
+  'participated in development of',
+  'involved in development of',
+  'worked in',
+  'worked as',
+  'worked for',
+  'worked at',
+  'responsible to',
+  'responsible in',
+  'responsible with',
+  'part of a team that',
+  'member of a team that',
+  'contributed as part of',
+  'worked together with',
+  'worked hand in hand with',
+  'played support role in',
+  'provided help with',
+  'provided input to',
+  'provided feedback on',
+  'participated actively in',
+  'closely involved in'
+];
+
+export const WEAK_VERBS: string[] = [
+  'help',
+  'assist',
+  'support',
+  'work',
+  'handle',
+  'do',
+  'make',
+  'use',
+  'try',
+  'attempt',
+  'participate',
+  'involve',
+  'collaborate',
+  'coordinate',
+  'communicate',
+  'liaise',
+  'serve',
+  'act',
+  'look',
+  'deal',
+  'perform',
+  'complete',
+  'carry',
+  'provide',
+  'follow',
+  'maintain',
+  'monitor',
+  'review',
+  'check',
+  'update',
+  'manage',
+  'oversee',
+  'touch',
+  'fix',
+  'improve',
+  'increase',
+  'reduce',
+  'grow',
+  'build',
+  'run',
+  'move',
+  'change',
+  'address',
+  'engage',
+  'participate',
+  'contribute',
+  'interact',
+  'organize',
+  'arrange',
+  'helped',
+  'assisted',
+  'supported',
+  'worked',
+  'handled',
+  'did',
+  'made',
+  'used',
+  'tried',
+  'attempted',
+  'participated',
+  'involved',
+  'collaborated',
+  'coordinated',
+  'communicated',
+  'served',
+  'acted',
+  'performed',
+  'completed',
+  'provided',
+  'followed',
+  'maintained',
+  'monitored',
+  'reviewed',
+  'checked',
+  'updated'
+];
+
+// Precompiled replacement map (WordNet-style offline mapping; deterministic at runtime).
+export const WEAK_TO_STRONG_MAP: Record<string, string[]> = {
+  help: ['Improved', 'Accelerated', 'Enabled', 'Strengthened'],
+  assist: ['Streamlined', 'Optimized', 'Facilitated', 'Advanced'],
+  support: ['Enabled', 'Scaled', 'Strengthened', 'Drove'],
+  work: ['Executed', 'Delivered', 'Implemented', 'Optimized'],
+  handle: ['Resolved', 'Directed', 'Managed', 'Streamlined'],
+  do: ['Executed', 'Delivered', 'Implemented', 'Completed'],
+  make: ['Built', 'Created', 'Produced', 'Developed'],
+  use: ['Applied', 'Leveraged', 'Implemented', 'Utilized'],
+  try: ['Delivered', 'Implemented', 'Achieved', 'Executed'],
+  attempt: ['Executed', 'Implemented', 'Delivered', 'Completed'],
+  participate: ['Led', 'Executed', 'Drove', 'Facilitated'],
+  involve: ['Led', 'Directed', 'Facilitated', 'Coordinated'],
+  collaborate: ['Aligned', 'Orchestrated', 'Facilitated', 'Unified'],
+  coordinate: ['Orchestrated', 'Streamlined', 'Directed', 'Aligned'],
+  communicate: ['Presented', 'Negotiated', 'Aligned', 'Influenced'],
+  perform: ['Executed', 'Delivered', 'Achieved', 'Completed'],
+  complete: ['Delivered', 'Executed', 'Finalized', 'Achieved'],
+  provide: ['Delivered', 'Supplied', 'Enabled', 'Presented'],
+  maintain: ['Sustained', 'Stabilized', 'Improved', 'Optimized'],
+  review: ['Audited', 'Evaluated', 'Assessed', 'Validated'],
+  check: ['Validated', 'Verified', 'Audited', 'Assessed'],
+  update: ['Enhanced', 'Refined', 'Optimized', 'Modernized']
+};
+
+export interface VerbFamily {
+  key: string;
+  members: string[];
+  alternatives: string[];
+}
+
+export const VERB_FAMILIES: VerbFamily[] = [
+  { key: 'lead', members: ['lead', 'led', 'spearhead', 'direct', 'guide', 'mentor', 'head'], alternatives: ['Directed', 'Orchestrated', 'Championed', 'Drove'] },
+  { key: 'manage', members: ['manage', 'managed', 'oversee', 'supervise', 'administer'], alternatives: ['Directed', 'Optimized', 'Scaled', 'Streamlined'] },
+  { key: 'build', members: ['build', 'built', 'create', 'created', 'develop', 'developed'], alternatives: ['Engineered', 'Designed', 'Launched', 'Implemented'] },
+  { key: 'improve', members: ['improve', 'improved', 'enhance', 'enhanced', 'optimize', 'optimized'], alternatives: ['Accelerated', 'Strengthened', 'Refined', 'Transformed'] },
+  { key: 'increase', members: ['increase', 'increased', 'grow', 'grew', 'grown', 'boost', 'boosted'], alternatives: ['Expanded', 'Scaled', 'Elevated', 'Amplified'] },
+  { key: 'reduce', members: ['reduce', 'reduced', 'decrease', 'decreased', 'lower', 'lowered', 'cut'], alternatives: ['Minimized', 'Eliminated', 'Compressed', 'Streamlined'] },
+  { key: 'deliver', members: ['deliver', 'delivered', 'execute', 'executed', 'implement', 'implemented'], alternatives: ['Completed', 'Launched', 'Operationalized', 'Finalized'] },
+  { key: 'analyze', members: ['analyze', 'analyzed', 'assess', 'assessed', 'evaluate', 'evaluated'], alternatives: ['Diagnosed', 'Quantified', 'Modeled', 'Validated'] },
+  { key: 'coordinate', members: ['coordinate', 'coordinated', 'collaborate', 'collaborated', 'align', 'aligned'], alternatives: ['Orchestrated', 'Unified', 'Facilitated', 'Synchronized'] },
+  { key: 'support', members: ['support', 'supported', 'assist', 'assisted', 'help', 'helped'], alternatives: ['Enabled', 'Accelerated', 'Strengthened', 'Drove'] },
+  { key: 'sell', members: ['sell', 'sold', 'close', 'closed', 'negotiate', 'negotiated'], alternatives: ['Expanded', 'Converted', 'Captured', 'Exceeded'] },
+  { key: 'monitor', members: ['monitor', 'monitored', 'track', 'tracked', 'watch'], alternatives: ['Audited', 'Governed', 'Stabilized', 'Enforced'] }
+];
+
+const WEAK_VERB_ROOT_SET = new Set(WEAK_VERBS.map((verb) => toVerbRoot(verb)));
+const FAMILY_BY_MEMBER = new Map<string, VerbFamily>();
+
+for (const family of VERB_FAMILIES) {
+  for (const member of family.members) {
+    FAMILY_BY_MEMBER.set(toVerbRoot(member), family);
+  }
+}
+
+export function isWeakVerb(token: string): boolean {
+  return WEAK_VERB_ROOT_SET.has(toVerbRoot(token));
+}
+
+export function weakVerbReplacements(token: string): string[] {
+  const root = toVerbRoot(token);
+  return WEAK_TO_STRONG_MAP[root] ?? [];
+}
+
+export function resolveVerbFamily(token: string): VerbFamily | null {
+  const normalized = toVerbRoot(normalizeToken(token));
+  if (!normalized) return null;
+  return FAMILY_BY_MEMBER.get(normalized) ?? null;
+}
