@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { insertLead } from '@/lib/supabase/admin';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -9,6 +10,15 @@ function isValidEmail(email: string): boolean {
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+    const limiter = checkRateLimit(`leads:${ip}`, 10, 60 * 60 * 1000);
+    if (!limiter.allowed) {
+      return NextResponse.json(
+        { error: 'Too many lead submissions. Please try again later.' },
+        { status: 429, headers: { 'Retry-After': String(limiter.retryAfterSec) } }
+      );
+    }
+
     const body = (await request.json()) as { email?: string; source?: string };
     const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
 

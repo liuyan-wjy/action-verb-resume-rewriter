@@ -225,10 +225,10 @@ export async function POST(request: Request) {
       );
     }
 
+    console.error('[rewrite_error]', error);
     return NextResponse.json(
       {
-        error: 'Rewrite failed',
-        detail
+        error: 'Rewrite failed'
       },
       { status: 500 }
     );

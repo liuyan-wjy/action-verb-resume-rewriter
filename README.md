@@ -72,6 +72,7 @@ Required:
 Optional limits:
 - `FREE_DAILY_LIMIT` (default `10`)
 - `ANON_DAILY_LIMIT` (default `5`)
+- `APP_TIMEZONE` (default `UTC`, for daily quota reset date)
 
 ## PayPal Setup
 

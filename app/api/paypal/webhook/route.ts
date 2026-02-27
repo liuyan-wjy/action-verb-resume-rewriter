@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyWebhookSignature } from '@/lib/paypal/client';
+import { hasServiceClientConfig } from '@/lib/supabase/server';
 import {
   activateSubscriptionForUser,
   cancelSubscriptionBySubscriptionId,
@@ -24,6 +25,10 @@ export async function POST(request: NextRequest) {
   let eventId = 'unknown';
 
   try {
+    if (!hasServiceClientConfig()) {
+      return NextResponse.json({ error: 'Server billing storage is not configured.' }, { status: 500 });
+    }
+
     const bodyText = await request.text();
     const event = JSON.parse(bodyText) as PayPalWebhookEvent;
 

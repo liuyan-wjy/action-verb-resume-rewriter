@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { PRO_PLAN } from '@/lib/config/billing';
-import { createServiceClient } from '@/lib/supabase/server';
+import { createServiceClient, createServiceClientOrThrow } from '@/lib/supabase/server';
 
 const MAX_CAS_RETRIES = 6;
 const USER_QUOTA_ERROR = 'Daily free quota reached. Upgrade to Pro or buy credits.';
@@ -26,7 +26,27 @@ export function getDailyLimits() {
 }
 
 export function getToday() {
-  return new Date().toISOString().slice(0, 10);
+  const timeZone = process.env.APP_TIMEZONE ?? 'UTC';
+  try {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).formatToParts(new Date());
+
+    const year = parts.find((part) => part.type === 'year')?.value;
+    const month = parts.find((part) => part.type === 'month')?.value;
+    const day = parts.find((part) => part.type === 'day')?.value;
+
+    if (!year || !month || !day) {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    return `${year}-${month}-${day}`;
+  } catch {
+    return new Date().toISOString().slice(0, 10);
+  }
 }
 
 export function deriveAnonKey(ip: string | null, userAgent: string | null) {
@@ -327,10 +347,7 @@ export async function createPendingPurchase(params: {
   price: number;
   paypalOrderId: string;
 }) {
-  const supabase = createServiceClient();
-  if (!supabase) {
-    return;
-  }
+  const supabase = createServiceClientOrThrow();
 
   const { error } = await supabase.from('credit_purchases').insert({
     user_id: params.userId,
@@ -373,10 +390,7 @@ export async function completePurchase(params: {
   paypalCaptureId: string | null;
   creditsToAdd: number;
 }) {
-  const supabase = createServiceClient();
-  if (!supabase) {
-    return;
-  }
+  const supabase = createServiceClientOrThrow();
 
   const { data: updatedPurchase, error: updatePurchaseError } = await supabase
     .from('credit_purchases')
@@ -403,10 +417,7 @@ export async function completePurchase(params: {
 }
 
 async function adjustPurchasedCredits(userId: string, delta: number): Promise<number> {
-  const supabase = createServiceClient();
-  if (!supabase) {
-    return 0;
-  }
+  const supabase = createServiceClientOrThrow();
 
   for (let attempt = 0; attempt < MAX_CAS_RETRIES; attempt += 1) {
     const { data: credits, error: creditsError } = await supabase
@@ -448,10 +459,7 @@ async function adjustPurchasedCredits(userId: string, delta: number): Promise<nu
 }
 
 export async function markSubscriptionPending(userId: string, subscriptionId: string) {
-  const supabase = createServiceClient();
-  if (!supabase) {
-    return;
-  }
+  const supabase = createServiceClientOrThrow();
 
   const { error } = await supabase
     .from('user_credits')
@@ -473,10 +481,7 @@ export async function syncProfile(params: {
   fullName: string | null;
   avatarUrl: string | null;
 }) {
-  const supabase = createServiceClient();
-  if (!supabase) {
-    return;
-  }
+  const supabase = createServiceClientOrThrow();
 
   const { error } = await supabase.from('profiles').upsert(
     {
@@ -499,10 +504,7 @@ export async function insertWebhookEvent(params: {
   resourceId: string | null;
   payload: unknown;
 }): Promise<{ inserted: boolean }> {
-  const supabase = createServiceClient();
-  if (!supabase) {
-    return { inserted: true };
-  }
+  const supabase = createServiceClientOrThrow();
 
   const { error } = await supabase.from('paypal_webhook_events').insert({
     event_id: params.eventId,
@@ -528,10 +530,7 @@ export async function finalizeWebhookEvent(params: {
   status: 'processed' | 'failed';
   processError?: string | null;
 }) {
-  const supabase = createServiceClient();
-  if (!supabase) {
-    return;
-  }
+  const supabase = createServiceClientOrThrow();
 
   const { error } = await supabase
     .from('paypal_webhook_events')
@@ -551,10 +550,7 @@ export async function activateSubscriptionForUser(params: {
   userId: string;
   subscriptionId: string;
 }) {
-  const supabase = createServiceClient();
-  if (!supabase) {
-    return;
-  }
+  const supabase = createServiceClientOrThrow();
 
   const { error } = await supabase
     .from('user_credits')
@@ -572,10 +568,7 @@ export async function activateSubscriptionForUser(params: {
 }
 
 export async function resetSubscriptionCreditsBySubscriptionId(subscriptionId: string) {
-  const supabase = createServiceClient();
-  if (!supabase) {
-    return;
-  }
+  const supabase = createServiceClientOrThrow();
 
   const { error } = await supabase
     .from('user_credits')
@@ -592,10 +585,7 @@ export async function resetSubscriptionCreditsBySubscriptionId(subscriptionId: s
 }
 
 export async function cancelSubscriptionBySubscriptionId(subscriptionId: string) {
-  const supabase = createServiceClient();
-  if (!supabase) {
-    return;
-  }
+  const supabase = createServiceClientOrThrow();
 
   const { error } = await supabase
     .from('user_credits')

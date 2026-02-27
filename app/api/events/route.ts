@@ -1,10 +1,20 @@
 import { NextResponse } from 'next/server';
 import { insertAnalyticsEvent } from '@/lib/supabase/admin';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
 export async function POST(request: Request) {
   try {
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+    const limiter = checkRateLimit(`events:${ip}`, 120, 60 * 1000);
+    if (!limiter.allowed) {
+      return NextResponse.json(
+        { ok: false, error: 'Rate limit exceeded.' },
+        { status: 429, headers: { 'Retry-After': String(limiter.retryAfterSec) } }
+      );
+    }
+
     const body = (await request.json()) as { name?: string; payload?: Record<string, unknown> };
     const event = {
       ts: new Date().toISOString(),

@@ -4,6 +4,12 @@ import { cookies } from 'next/headers';
 
 const SCHEMA = process.env.NEXT_PUBLIC_SUPABASE_SCHEMA ?? 'avr';
 
+function getServiceConfig() {
+  const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  return { url, serviceRole };
+}
+
 export async function createClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -34,8 +40,7 @@ export async function createClient() {
 }
 
 export function createServiceClient() {
-  const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const { url, serviceRole } = getServiceConfig();
 
   if (!url || !serviceRole) {
     return null;
@@ -48,4 +53,17 @@ export function createServiceClient() {
     },
     db: { schema: SCHEMA }
   });
+}
+
+export function hasServiceClientConfig() {
+  const { url, serviceRole } = getServiceConfig();
+  return Boolean(url && serviceRole);
+}
+
+export function createServiceClientOrThrow() {
+  const client = createServiceClient();
+  if (!client) {
+    throw new Error('Supabase service role is not configured.');
+  }
+  return client;
 }

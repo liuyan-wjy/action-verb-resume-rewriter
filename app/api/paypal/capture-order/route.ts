@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { captureOrder } from '@/lib/paypal/client';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, hasServiceClientConfig } from '@/lib/supabase/server';
 import { completePurchase, ensureUserCredits, getPendingPurchase, getUserCredits } from '@/lib/supabase/billing';
 
 export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
+    if (!hasServiceClientConfig()) {
+      return NextResponse.json({ error: 'Server billing storage is not configured.' }, { status: 500 });
+    }
+
     const body = (await request.json()) as { orderId?: string };
     if (!body.orderId) {
       return NextResponse.json({ error: 'orderId is required.' }, { status: 400 });
