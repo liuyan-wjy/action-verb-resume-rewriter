@@ -1,15 +1,17 @@
-import { WEAK_PHRASES, isWeakVerb } from './rule-dictionaries';
+import { getWeakPhrasesForRole, isWeakVerb } from './rule-dictionaries';
 import { tokenizeWords } from './text-normalize';
+import type { UserRole } from './types';
 
 function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-export function detectWeakMatches(text: string): string[] {
+export function detectWeakMatches(text: string, role: UserRole = 'general'): string[] {
   const lowered = text.toLowerCase();
   const matches = new Set<string>();
+  const weakPhrases = getWeakPhrasesForRole(role);
 
-  for (const phrase of WEAK_PHRASES) {
+  for (const phrase of weakPhrases) {
     const pattern = new RegExp(`\\b${escapeRegExp(phrase)}\\b`, 'i');
     if (pattern.test(lowered)) {
       matches.add(phrase);
@@ -18,7 +20,7 @@ export function detectWeakMatches(text: string): string[] {
 
   const words = tokenizeWords(lowered);
   for (const word of words) {
-    if (isWeakVerb(word)) {
+    if (isWeakVerb(word, role)) {
       matches.add(word);
     }
   }
@@ -26,12 +28,12 @@ export function detectWeakMatches(text: string): string[] {
   return Array.from(matches).slice(0, 16);
 }
 
-export function stripLeadingWeakPhrase(text: string): string {
+export function stripLeadingWeakPhrase(text: string, role: UserRole = 'general'): string {
   const trimmed = text.trim().replace(/^[-*•]\s*/, '');
   const lowered = trimmed.toLowerCase();
 
   // Prefer longest leading weak phrase first.
-  const sorted = [...WEAK_PHRASES].sort((a, b) => b.length - a.length);
+  const sorted = [...getWeakPhrasesForRole(role)].sort((a, b) => b.length - a.length);
 
   for (const phrase of sorted) {
     const pattern = new RegExp(`^${escapeRegExp(phrase)}(?:\\b|\\s|[:,\\-])`, 'i');

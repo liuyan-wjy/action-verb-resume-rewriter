@@ -1,3 +1,4 @@
+import type { UserRole } from './types';
 import { normalizeToken, toVerbRoot } from './text-normalize';
 
 // Maintained weak language set (phrases + verbs) for deterministic detection.
@@ -401,6 +402,145 @@ export const WEAK_VERBS: string[] = [
   'worked'
 ];
 
+export const ROLE_WEAK_PHRASES: Partial<Record<UserRole, string[]>> = {
+  engineering: [
+    'worked on bug fixes',
+    'worked on backend services',
+    'worked on frontend tasks',
+    'helped with code reviews',
+    'assisted with deployment tasks',
+    'supported release process',
+    'participated in standups',
+    'involved in sprint planning',
+    'worked with senior engineers on',
+    'contributed to codebase maintenance',
+    'helped with incident response',
+    'supported migration work',
+    'worked on technical debt items',
+    'assisted in writing tests',
+    'worked with devops team',
+    'helped maintain CI CD pipelines'
+  ],
+  product: [
+    'helped with roadmap planning',
+    'assisted with backlog grooming',
+    'worked with stakeholders on requirements',
+    'participated in user research',
+    'involved in feature prioritization',
+    'supported product launch',
+    'worked on PRD documentation',
+    'helped coordinate cross functional teams',
+    'assisted with sprint ceremonies',
+    'contributed to product strategy discussions',
+    'worked with design team on',
+    'worked with engineering team on',
+    'supported discovery process',
+    'participated in customer interviews',
+    'helped write user stories',
+    'assisted with go to market planning'
+  ],
+  marketing: [
+    'helped with campaign execution',
+    'assisted with social media posts',
+    'worked on content creation',
+    'supported email marketing tasks',
+    'participated in brand initiatives',
+    'involved in event planning',
+    'worked with sales team on collateral',
+    'assisted with performance reporting',
+    'supported paid media campaigns',
+    'helped with SEO tasks',
+    'worked on newsletter production',
+    'contributed to marketing operations',
+    'helped coordinate agency deliverables',
+    'assisted with audience segmentation',
+    'worked on website copy updates',
+    'supported demand generation programs'
+  ],
+  sales: [
+    'helped with lead follow up',
+    'assisted with pipeline management',
+    'worked on account outreach',
+    'supported sales enablement efforts',
+    'participated in client meetings',
+    'worked with account executives on deals',
+    'assisted with proposal creation',
+    'supported contract process',
+    'helped maintain CRM hygiene',
+    'worked on sales reports',
+    'assisted with renewal conversations',
+    'involved in discovery calls',
+    'helped prepare sales presentations',
+    'supported upsell efforts',
+    'worked on territory planning',
+    'contributed to partner channel coordination'
+  ]
+};
+
+export const ROLE_WEAK_VERBS: Partial<Record<UserRole, string[]>> = {
+  engineering: [
+    'debug',
+    'maintain',
+    'support',
+    'assist',
+    'help',
+    'fix',
+    'update',
+    'monitor',
+    'review',
+    'check',
+    'test',
+    'tested',
+    'document',
+    'documented'
+  ],
+  product: [
+    'coordinate',
+    'align',
+    'support',
+    'assist',
+    'help',
+    'participate',
+    'contribute',
+    'document',
+    'review',
+    'communicate',
+    'discuss',
+    'follow'
+  ],
+  marketing: [
+    'support',
+    'assist',
+    'help',
+    'post',
+    'posted',
+    'write',
+    'wrote',
+    'coordinate',
+    'monitor',
+    'review',
+    'update',
+    'maintain',
+    'track'
+  ],
+  sales: [
+    'support',
+    'assist',
+    'help',
+    'follow',
+    'followed',
+    'contact',
+    'contacted',
+    'reach',
+    'reached',
+    'communicate',
+    'coordinate',
+    'maintain',
+    'update',
+    'track'
+  ]
+};
+
 // Precompiled replacement map (WordNet-style offline mapping; deterministic at runtime).
 export const WEAK_TO_STRONG_MAP: Record<string, string[]> = {
   help: ['Improved', 'Accelerated', 'Enabled', 'Strengthened'],
@@ -449,7 +589,17 @@ export const VERB_FAMILIES: VerbFamily[] = [
 ];
 
 const WEAK_VERB_ROOT_SET = new Set(WEAK_VERBS.map((verb) => toVerbRoot(verb)));
+const ROLE_WEAK_VERB_ROOTS = new Map<UserRole, Set<string>>();
 const FAMILY_BY_MEMBER = new Map<string, VerbFamily>();
+
+for (const role of ['engineering', 'product', 'marketing', 'sales'] as const) {
+  const roleRoots = new Set<string>(WEAK_VERB_ROOT_SET);
+  const extras = ROLE_WEAK_VERBS[role] ?? [];
+  for (const token of extras) {
+    roleRoots.add(toVerbRoot(token));
+  }
+  ROLE_WEAK_VERB_ROOTS.set(role, roleRoots);
+}
 
 for (const family of VERB_FAMILIES) {
   for (const member of family.members) {
@@ -457,8 +607,20 @@ for (const family of VERB_FAMILIES) {
   }
 }
 
-export function isWeakVerb(token: string): boolean {
-  return WEAK_VERB_ROOT_SET.has(toVerbRoot(token));
+export function getWeakPhrasesForRole(role?: UserRole): string[] {
+  const extras = role ? ROLE_WEAK_PHRASES[role] ?? [] : [];
+  return Array.from(new Set([...WEAK_PHRASES, ...extras]));
+}
+
+export function isWeakVerb(token: string, role?: UserRole): boolean {
+  const root = toVerbRoot(token);
+  if (!root) return false;
+
+  if (role && ROLE_WEAK_VERB_ROOTS.has(role)) {
+    return ROLE_WEAK_VERB_ROOTS.get(role)?.has(root) ?? false;
+  }
+
+  return WEAK_VERB_ROOT_SET.has(root);
 }
 
 export function weakVerbReplacements(token: string): string[] {

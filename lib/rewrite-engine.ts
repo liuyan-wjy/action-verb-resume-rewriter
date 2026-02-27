@@ -109,8 +109,8 @@ function startsWithActionVerb(text: string): boolean {
   return Boolean(lead && LEAD_VERB_WORDS.has(lead));
 }
 
-function startWithVerb(verb: string, text: string): string {
-  const core = stripLeadingWeakPhrase(cleanSentence(text));
+function startWithVerb(verb: string, text: string, role: RewriteRequest['role']): string {
+  const core = stripLeadingWeakPhrase(cleanSentence(text), role ?? 'general');
   if (!core) {
     return `${verb} high-priority initiatives across cross-functional stakeholders.`;
   }
@@ -134,7 +134,7 @@ function extractActionVerbFromSentence(text: string, fallback: string): string {
 export function localRewrite(payload: RewriteRequest): RewriteResponse {
   const role = payload.role ?? 'general';
   const selectedTone = payload.tone;
-  const weakMatches = detectWeakMatches(payload.text);
+  const weakMatches = detectWeakMatches(payload.text, role);
   const ruleBasedSuggestions = weakMatches.flatMap((match) => weakVerbReplacements(match.split(/\s+/)[0] ?? match));
   const bankSuggestions = getVerbSuggestions(role, selectedTone, []);
   const suggestions = Array.from(new Set([...ruleBasedSuggestions, ...bankSuggestions])).slice(0, 10);
@@ -143,7 +143,7 @@ export function localRewrite(payload: RewriteRequest): RewriteResponse {
 
   const variations: RewriteVariation[] = tones.slice(0, 3).map((tone, index) => {
     const verb = getVerbSuggestions(role, tone, [])[index] ?? getVerbSuggestions(role, tone, [])[0] ?? 'Delivered';
-    const rewritten = startWithVerb(verb, payload.text);
+    const rewritten = startWithVerb(verb, payload.text, role);
     return {
       tone,
       action_verb: extractActionVerbFromSentence(rewritten, verb),
