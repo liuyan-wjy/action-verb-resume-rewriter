@@ -10,6 +10,72 @@ const toneReason: Record<Tone, string> = {
   impact: 'Frames outcomes in measurable business terms.'
 };
 
+const LEAD_VERB_WORDS = new Set(
+  [
+    // Tone verbs
+    'led',
+    'spearheaded',
+    'directed',
+    'mentored',
+    'orchestrated',
+    'executed',
+    'implemented',
+    'delivered',
+    'coordinated',
+    'optimized',
+    'increased',
+    'reduced',
+    'improved',
+    'accelerated',
+    'boosted',
+    // Common role verbs
+    'engineered',
+    'built',
+    'refactored',
+    'automated',
+    'deployed',
+    'scaled',
+    'debugged',
+    'hardened',
+    'integrated',
+    'defined',
+    'prioritized',
+    'launched',
+    'validated',
+    'drove',
+    'synthesized',
+    'scoped',
+    'aligned',
+    'positioned',
+    'segmented',
+    'produced',
+    'amplified',
+    'prospected',
+    'negotiated',
+    'closed',
+    'expanded',
+    'exceeded',
+    'retained',
+    'generated',
+    'converted',
+    'standardized',
+    'audited',
+    'enforced',
+    'monitored',
+    'stabilized',
+    'analyzed',
+    'forecasted',
+    'modeled',
+    'reconciled',
+    'evaluated',
+    'reported',
+    // Additional common resume starts
+    'managed',
+    'owned',
+    'ran'
+  ].map((word) => word.toLowerCase())
+);
+
 export function buildQuantificationHint(text: string): string {
   if (/\d/.test(text)) {
     return 'You already have measurable data; keep the strongest metric closest to the verb.';
@@ -22,6 +88,26 @@ function cleanSentence(text: string): string {
   return trimmed.charAt(0).toLowerCase() + trimmed.slice(1);
 }
 
+function capitalizeSentence(text: string): string {
+  const cleaned = text.trim().replace(/\s+/g, ' ').replace(/\.$/, '');
+  if (!cleaned) {
+    return '';
+  }
+  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1) + '.';
+}
+
+function getLeadWord(text: string): string | null {
+  const first = text.trim().split(/\s+/)[0];
+  if (!first) return null;
+  const normalized = first.toLowerCase().replace(/[^a-z]/g, '');
+  return normalized || null;
+}
+
+function startsWithActionVerb(text: string): boolean {
+  const lead = getLeadWord(text);
+  return Boolean(lead && LEAD_VERB_WORDS.has(lead));
+}
+
 function startWithVerb(verb: string, text: string): string {
   const core = stripLeadingWeakPhrase(cleanSentence(text));
   if (!core) {
@@ -29,7 +115,19 @@ function startWithVerb(verb: string, text: string): string {
   }
 
   const normalizedCore = core.replace(/^to\s+/, '').replace(/^managing\s+/i, 'the management of ');
-  return `${verb} ${normalizedCore}`.replace(/\s+/g, ' ').trim() + '.';
+
+  // If input already starts with a meaningful action verb, don't prepend a second verb.
+  if (startsWithActionVerb(normalizedCore)) {
+    return capitalizeSentence(normalizedCore);
+  }
+
+  return capitalizeSentence(`${verb} ${normalizedCore}`);
+}
+
+function extractActionVerbFromSentence(text: string, fallback: string): string {
+  const lead = getLeadWord(text);
+  if (!lead) return fallback;
+  return lead.charAt(0).toUpperCase() + lead.slice(1);
 }
 
 export function localRewrite(payload: RewriteRequest): RewriteResponse {
@@ -42,10 +140,11 @@ export function localRewrite(payload: RewriteRequest): RewriteResponse {
 
   const variations: RewriteVariation[] = tones.slice(0, 3).map((tone, index) => {
     const verb = getVerbSuggestions(role, tone, [])[index] ?? getVerbSuggestions(role, tone, [])[0] ?? 'Delivered';
+    const rewritten = startWithVerb(verb, payload.text);
     return {
       tone,
-      action_verb: verb,
-      rewritten_bullet: startWithVerb(verb, payload.text),
+      action_verb: extractActionVerbFromSentence(rewritten, verb),
+      rewritten_bullet: rewritten,
       why_better: toneReason[tone],
       quantification_hint: buildQuantificationHint(payload.text)
     };
