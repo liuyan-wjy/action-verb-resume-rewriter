@@ -254,12 +254,31 @@ a {
   display: flex;
   gap: 0.45rem;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .auth-btn {
   text-decoration: none;
   padding: 0.45rem 0.8rem;
   font-size: 0.85rem;
+}
+
+.credit-pill {
+  text-decoration: none;
+  padding: 0.38rem 0.72rem;
+  border-radius: 999px;
+  border: 1px solid #f0b176;
+  background: #fff1df;
+  color: #7f2f14;
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.credit-pill-low {
+  border-color: #c43f1a;
+  background: #ffe4dc;
+  color: #8c2209;
 }
 
 .auth-muted {
