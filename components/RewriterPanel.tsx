@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { findRepetitionIssues } from '@/lib/repetition';
 import { trackEvent } from '@/lib/analytics';
@@ -16,6 +17,15 @@ interface RewriteHistoryItem {
   input: string;
   variations: RewriteVariation[];
   createdAt: string;
+}
+
+interface UserQuotaResponse {
+  quota: {
+    date: string;
+    dailyLimit: number;
+    dailyUsed: number;
+    dailyRemaining: number;
+  };
 }
 
 const roles: Array<{ label: string; value: UserRole }> = [
@@ -58,12 +68,39 @@ export function RewriterPanel() {
   const [result, setResult] = useState<RewriteApiResponse | null>(null);
   const [history, setHistory] = useState<RewriteHistoryItem[]>([]);
   const rewriteCountRef = useRef(0);
+  const [dailyQuota, setDailyQuota] = useState<UserQuotaResponse['quota'] | null>(null);
+  const [quotaLoading, setQuotaLoading] = useState(false);
 
   const [showLead, setShowLead] = useState(false);
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const [email, setEmail] = useState('');
 
   const [repetitionInput, setRepetitionInput] = useState('');
+
+  async function refreshDailyQuota() {
+    setQuotaLoading(true);
+    try {
+      const response = await fetch('/api/user/me', {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        cache: 'no-store'
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setDailyQuota(null);
+        }
+        return;
+      }
+
+      const data = (await response.json()) as UserQuotaResponse;
+      setDailyQuota(data.quota);
+    } catch {
+      setDailyQuota(null);
+    } finally {
+      setQuotaLoading(false);
+    }
+  }
 
   useEffect(() => {
     trackEvent('page_view', { path: window.location.pathname });
@@ -80,6 +117,7 @@ export function RewriterPanel() {
 
     const leadState = window.localStorage.getItem(LEAD_SUBMITTED_KEY) === 'true';
     setLeadSubmitted(leadState);
+    void refreshDailyQuota();
   }, []);
 
   const repetitionIssues = useMemo(() => findRepetitionIssues(repetitionInput, role), [repetitionInput, role]);
@@ -110,6 +148,7 @@ export function RewriterPanel() {
       }
 
       setResult(data);
+      void refreshDailyQuota();
 
       const item: RewriteHistoryItem = {
         id: `${Date.now()}`,
@@ -190,6 +229,22 @@ export function RewriterPanel() {
           <p>
             Paste one resume bullet. Get 3 stronger ATS-friendly rewrites without inventing facts.
           </p>
+          {dailyQuota ? (
+            <div className={`quota-bar${dailyQuota.dailyRemaining <= 2 ? ' quota-bar-low' : ''}`}>
+              <span>
+                <strong>Daily free quota ({dailyQuota.date}):</strong> {dailyQuota.dailyUsed}/{dailyQuota.dailyLimit} used
+                {' · '}
+                {dailyQuota.dailyRemaining} left
+              </span>
+              {dailyQuota.dailyRemaining <= 2 ? (
+                <Link href="/pricing" className="quota-upgrade-link">
+                  Upgrade
+                </Link>
+              ) : null}
+            </div>
+          ) : quotaLoading ? (
+            <p className="hint">Checking daily quota...</p>
+          ) : null}
         </div>
 
         <label className="field-label" htmlFor="resume-bullet">
