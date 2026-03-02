@@ -25,6 +25,12 @@ export function SubscriptionSuccessClient() {
     const maxAttempts = 24;
     const intervalMs = 5000;
 
+    function scheduleNextCheck() {
+      if (!cancelled) {
+        window.setTimeout(checkStatus, intervalMs);
+      }
+    }
+
     async function checkStatus() {
       if (cancelled) {
         return;
@@ -42,7 +48,9 @@ export function SubscriptionSuccessClient() {
           if (attempts >= maxAttempts && !cancelled) {
             setStatus('timeout');
             setMessage('Subscription created, but activation is still pending. Please refresh in a moment.');
+            return;
           }
+          scheduleNextCheck();
           return;
         }
 
@@ -68,18 +76,14 @@ export function SubscriptionSuccessClient() {
           return;
         }
 
-        if (!cancelled) {
-          window.setTimeout(checkStatus, intervalMs);
-        }
+        scheduleNextCheck();
       } catch {
         if (attempts >= maxAttempts && !cancelled) {
           setStatus('error');
           setMessage('Unable to confirm subscription status right now. Please check your account page.');
           return;
         }
-        if (!cancelled) {
-          window.setTimeout(checkStatus, intervalMs);
-        }
+        scheduleNextCheck();
       }
     }
 

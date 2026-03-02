@@ -71,6 +71,29 @@ function contentToText(content: unknown): string {
   return '';
 }
 
+function ensureThreeVariations(
+  modelVariations: RewriteVariation[] | null,
+  localVariations: RewriteVariation[]
+): RewriteVariation[] {
+  const merged = [...(modelVariations ?? []), ...localVariations];
+  const deduped: RewriteVariation[] = [];
+  const seen = new Set<string>();
+
+  for (const item of merged) {
+    const key = `${item.tone}|${item.action_verb}|${item.rewritten_bullet.trim().toLowerCase()}`;
+    if (seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    deduped.push(item);
+    if (deduped.length === 3) {
+      break;
+    }
+  }
+
+  return deduped.slice(0, 3);
+}
+
 async function requestModel(model: string, payload: RewriteRequest): Promise<RewriteVariation[] | null> {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
@@ -189,7 +212,7 @@ export async function POST(request: Request) {
     }
 
     const local = localRewrite(payload);
-    const variations = modelVariations && modelVariations.length > 0 ? modelVariations : local.variations;
+    const variations = ensureThreeVariations(modelVariations, local.variations);
 
     try {
       await persistRewrite({
