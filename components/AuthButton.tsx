@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { User } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/client';
+import { CREDITS_UPDATED_EVENT } from '@/lib/credits-events';
 
 interface UserMeResponse {
   credits?: {
@@ -96,6 +97,23 @@ export function AuthButton() {
 
     return () => window.clearInterval(timer);
   }, [user, refreshCredits]);
+
+  useEffect(() => {
+    function handleCreditsUpdated(event: Event) {
+      const customEvent = event as CustomEvent<{ total?: number }>;
+      const total = Number(customEvent.detail?.total);
+      if (Number.isFinite(total)) {
+        setTotalCredits(total);
+      }
+      void refreshCredits();
+    }
+
+    window.addEventListener(CREDITS_UPDATED_EVENT, handleCreditsUpdated as EventListener);
+
+    return () => {
+      window.removeEventListener(CREDITS_UPDATED_EVENT, handleCreditsUpdated as EventListener);
+    };
+  }, [refreshCredits]);
 
   async function handleLogin() {
     if (!supabase) return;

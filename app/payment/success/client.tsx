@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { emitCreditsUpdated } from '@/lib/credits-events';
 
 export function PaymentSuccessClient() {
   const params = useSearchParams();
@@ -21,12 +22,20 @@ export function PaymentSuccessClient() {
       body: JSON.stringify({ orderId })
     })
       .then(async (response) => {
-        const data = (await response.json()) as { success?: boolean; message?: string; error?: string };
+        const data = (await response.json()) as {
+          success?: boolean;
+          message?: string;
+          error?: string;
+          credits?: {
+            total?: number;
+          };
+        };
         if (!response.ok || !data.success) {
           throw new Error(data.error ?? data.message ?? 'Failed to capture order.');
         }
         setStatus('success');
         setMessage(data.message ?? 'Payment completed successfully.');
+        emitCreditsUpdated({ total: data.credits?.total });
       })
       .catch((requestError) => {
         setStatus('error');
