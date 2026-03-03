@@ -6,7 +6,8 @@ export function NavBar() {
     <header className="nav-wrap">
       <div className="container nav-inner">
         <Link href="/" className="brand">
-          PowerVerb
+          <span className="brand-main">PowerVerb</span>
+          <span className="brand-subtitle">resumeactionverbs.com</span>
         </Link>
         <nav className="nav-links" aria-label="Primary">
           <Link href="/tool/resume-action-verbs-rewriter">Tool</Link>

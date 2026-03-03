@@ -102,6 +102,22 @@ a {
   letter-spacing: 0.08em;
   text-decoration: none;
   font-size: 1.8rem;
+  display: flex;
+  flex-direction: column;
+  line-height: 0.95;
+  gap: 0.08rem;
+}
+
+.brand-main {
+  display: block;
+}
+
+.brand-subtitle {
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  text-transform: lowercase;
 }
 
 .nav-links {
@@ -441,5 +457,9 @@ a {
 
   .brand {
     font-size: 1.5rem;
+  }
+
+  .brand-subtitle {
+    font-size: 0.52rem;
   }
 }
