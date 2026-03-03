@@ -14,6 +14,7 @@ const bodyFont = Source_Sans_3({
   subsets: ['latin'],
   variable: '--font-body'
 });
+const ICON_VERSION = '20260303';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -44,16 +45,16 @@ export const metadata: Metadata = {
     title: SITE_NAME,
     description: SITE_DESCRIPTION
   },
-  manifest: `${SITE_URL}/site.webmanifest`,
+  manifest: `${SITE_URL}/site.webmanifest?v=${ICON_VERSION}`,
   themeColor: '#c43f1a',
   icons: {
     icon: [
-      { url: `${SITE_URL}/favicon.ico` },
-      { url: `${SITE_URL}/favicon-32x32.png`, sizes: '32x32', type: 'image/png' },
-      { url: `${SITE_URL}/favicon-16x16.png`, sizes: '16x16', type: 'image/png' }
+      { url: `${SITE_URL}/favicon.ico?v=${ICON_VERSION}` },
+      { url: `${SITE_URL}/favicon-32x32.png?v=${ICON_VERSION}`, sizes: '32x32', type: 'image/png' },
+      { url: `${SITE_URL}/favicon-16x16.png?v=${ICON_VERSION}`, sizes: '16x16', type: 'image/png' }
     ],
-    apple: [{ url: `${SITE_URL}/apple-touch-icon.png`, sizes: '180x180', type: 'image/png' }],
-    shortcut: `${SITE_URL}/favicon.ico`
+    apple: [{ url: `${SITE_URL}/apple-touch-icon.png?v=${ICON_VERSION}`, sizes: '180x180', type: 'image/png' }],
+    shortcut: `${SITE_URL}/favicon.ico?v=${ICON_VERSION}`
   }
 };
 
