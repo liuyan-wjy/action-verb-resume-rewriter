@@ -118,7 +118,8 @@ export function AuthButton() {
   async function handleLogin() {
     if (!supabase) return;
 
-    const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(window.location.pathname)}`;
+    const authBaseUrl = (process.env.NEXT_PUBLIC_APP_URL || window.location.origin).replace(/\/$/, '');
+    const redirectTo = `${authBaseUrl}/auth/callback?next=${encodeURIComponent(window.location.pathname)}`;
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo }
