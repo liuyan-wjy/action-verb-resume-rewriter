@@ -1,6 +1,19 @@
 const PAYPAL_API_BASE =
   process.env.PAYPAL_MODE === 'production' ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com';
 
+function getAppUrl() {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '');
+  if (appUrl) {
+    return appUrl;
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    return 'http://localhost:3000';
+  }
+
+  throw new Error('NEXT_PUBLIC_APP_URL is not configured.');
+}
+
 function getPayPalConfig() {
   const clientId = process.env.PAYPAL_CLIENT_ID;
   const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
@@ -40,7 +53,7 @@ export async function createOrder(params: {
   userId: string;
 }) {
   const accessToken = await getAccessToken();
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
+  const appUrl = getAppUrl();
 
   const response = await fetch(`${PAYPAL_API_BASE}/v2/checkout/orders`, {
     method: 'POST',
@@ -123,7 +136,7 @@ export async function captureOrder(orderId: string) {
 
 export async function createSubscription(params: { userId: string; planId: string }) {
   const accessToken = await getAccessToken();
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
+  const appUrl = getAppUrl();
 
   const response = await fetch(`${PAYPAL_API_BASE}/v1/billing/subscriptions`, {
     method: 'POST',

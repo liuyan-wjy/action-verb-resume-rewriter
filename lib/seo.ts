@@ -4,8 +4,7 @@ export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME ?? 'PowerVerb';
 export const SITE_DESCRIPTION =
   'Rewrite weak resume bullets into action-verb, ATS-friendly statements with role-specific tone and quantification hints.';
 
-const rawSiteUrl =
-  process.env.NEXT_PUBLIC_APP_URL ?? process.env.OPENROUTER_SITE_URL ?? 'https://action-verb-resume-rewriter.vercel.app';
+const rawSiteUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.OPENROUTER_SITE_URL ?? 'https://resumeactionverbs.com';
 
 export const SITE_URL = rawSiteUrl.replace(/\/$/, '');
 

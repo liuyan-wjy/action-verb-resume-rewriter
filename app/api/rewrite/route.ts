@@ -105,7 +105,7 @@ async function requestModel(model: string, payload: RewriteRequest): Promise<Rew
     headers: {
       Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
-      'HTTP-Referer': process.env.OPENROUTER_SITE_URL ?? 'http://localhost:3000',
+      'HTTP-Referer': process.env.OPENROUTER_SITE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000',
       'X-Title': process.env.OPENROUTER_SITE_NAME ?? 'Action Verb Resume Rewriter'
     },
     body: JSON.stringify({
