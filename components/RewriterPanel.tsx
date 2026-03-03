@@ -74,6 +74,8 @@ export function RewriterPanel() {
   const [showLead, setShowLead] = useState(false);
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const [email, setEmail] = useState('');
+  const [leadSubmitting, setLeadSubmitting] = useState(false);
+  const [leadError, setLeadError] = useState<string | null>(null);
 
   const [repetitionInput, setRepetitionInput] = useState('');
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
@@ -218,20 +220,32 @@ export function RewriterPanel() {
   }
 
   async function submitLead() {
-    if (!isValidEmail(email)) {
-      setError('Please enter a valid email address.');
+    if (leadSubmitting) {
       return;
     }
 
+    if (!isValidEmail(email)) {
+      setLeadError('Please enter a valid email address.');
+      return;
+    }
+
+    let timer: number | null = null;
+
     try {
+      setLeadSubmitting(true);
+      setLeadError(null);
+
+      const controller = new AbortController();
+      timer = window.setTimeout(() => controller.abort(), 10000);
+
       const response = await fetch('/api/leads', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, source: 'rewriter_modal' })
+        body: JSON.stringify({ email, source: 'rewriter_modal' }),
+        signal: controller.signal
       });
-
       const data = (await response.json()) as { error?: string };
       if (!response.ok) {
         throw new Error(data.error ?? 'Lead submission failed.');
@@ -242,8 +256,18 @@ export function RewriterPanel() {
       setShowLead(false);
       window.localStorage.setItem(LEAD_SUBMITTED_KEY, 'true');
       setError(null);
+      setLeadError(null);
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : 'Lead submission failed.');
+      if (submitError instanceof Error && submitError.name === 'AbortError') {
+        setLeadError('Request timed out. Please retry.');
+      } else {
+        setLeadError(submitError instanceof Error ? submitError.message : 'Lead submission failed.');
+      }
+    } finally {
+      if (timer) {
+        window.clearTimeout(timer);
+      }
+      setLeadSubmitting(false);
     }
   }
 
@@ -422,12 +446,14 @@ export function RewriterPanel() {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="you@example.com"
+              disabled={leadSubmitting}
             />
+            {leadError ? <p className="error-text">{leadError}</p> : null}
             <div className="modal-actions">
-              <button className="btn-primary" onClick={submitLead}>
-                Unlock Pack
+              <button className="btn-primary" onClick={submitLead} disabled={leadSubmitting}>
+                {leadSubmitting ? 'Unlocking...' : 'Unlock Pack'}
               </button>
-              <button className="btn-secondary" onClick={() => setShowLead(false)}>
+              <button className="btn-secondary" onClick={() => setShowLead(false)} disabled={leadSubmitting}>
                 Maybe Later
               </button>
             </div>
