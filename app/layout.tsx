@@ -44,9 +44,15 @@ export const metadata: Metadata = {
     title: SITE_NAME,
     description: SITE_DESCRIPTION
   },
+  manifest: `${SITE_URL}/site.webmanifest`,
+  themeColor: '#c43f1a',
   icons: {
-    icon: `${SITE_URL}/favicon.ico`,
-    apple: `${SITE_URL}/apple-touch-icon.png`,
+    icon: [
+      { url: `${SITE_URL}/favicon.ico` },
+      { url: `${SITE_URL}/favicon-32x32.png`, sizes: '32x32', type: 'image/png' },
+      { url: `${SITE_URL}/favicon-16x16.png`, sizes: '16x16', type: 'image/png' }
+    ],
+    apple: [{ url: `${SITE_URL}/apple-touch-icon.png`, sizes: '180x180', type: 'image/png' }],
     shortcut: `${SITE_URL}/favicon.ico`
   }
 };
