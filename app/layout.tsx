@@ -45,9 +45,9 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION
   },
   icons: {
-    icon: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
-    shortcut: '/favicon.ico'
+    icon: `${SITE_URL}/favicon.ico`,
+    apple: `${SITE_URL}/apple-touch-icon.png`,
+    shortcut: `${SITE_URL}/favicon.ico`
   }
 };
 
