@@ -58,6 +58,7 @@ function isValidEmail(email: string): boolean {
 }
 
 export function RewriterPanel() {
+  const toolSectionRef = useRef<HTMLElement | null>(null);
   const [text, setText] = useState('Responsible for managing a team of 5 support specialists across escalations.');
   const [role, setRole] = useState<UserRole>('general');
   const [tone, setTone] = useState<Tone>('execution');
@@ -80,7 +81,9 @@ export function RewriterPanel() {
   const [repetitionInput, setRepetitionInput] = useState('');
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [copyError, setCopyError] = useState<string | null>(null);
+  const [reusedHistoryId, setReusedHistoryId] = useState<string | null>(null);
   const copyResetTimerRef = useRef<number | null>(null);
+  const reuseResetTimerRef = useRef<number | null>(null);
 
   async function refreshDailyQuota() {
     setQuotaLoading(true);
@@ -129,6 +132,9 @@ export function RewriterPanel() {
     return () => {
       if (copyResetTimerRef.current) {
         window.clearTimeout(copyResetTimerRef.current);
+      }
+      if (reuseResetTimerRef.current) {
+        window.clearTimeout(reuseResetTimerRef.current);
       }
     };
   }, []);
@@ -217,6 +223,20 @@ export function RewriterPanel() {
       weakMatches: [],
       suggestions: []
     });
+
+    setReusedHistoryId(item.id);
+    if (reuseResetTimerRef.current) {
+      window.clearTimeout(reuseResetTimerRef.current);
+    }
+    reuseResetTimerRef.current = window.setTimeout(() => {
+      setReusedHistoryId(null);
+    }, 1600);
+
+    window.requestAnimationFrame(() => {
+      toolSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const textarea = document.getElementById('resume-bullet') as HTMLTextAreaElement | null;
+      textarea?.focus();
+    });
   }
 
   async function submitLead() {
@@ -273,7 +293,7 @@ export function RewriterPanel() {
 
   return (
     <div className="stack-xl">
-      <section className="card stack-md">
+      <section ref={toolSectionRef} className="card stack-md">
         <div className="stack-sm">
           <h2>Action Verb Resume Rewriter</h2>
           <p>
@@ -427,7 +447,7 @@ export function RewriterPanel() {
               <article key={item.id} className="mini-card">
                 <p className="history-input">{item.input}</p>
                 <button className="btn-secondary" onClick={() => applyHistoryItem(item)}>
-                  Reuse Output
+                  {reusedHistoryId === item.id ? 'Loaded' : 'Reuse Output'}
                 </button>
               </article>
             ))}
