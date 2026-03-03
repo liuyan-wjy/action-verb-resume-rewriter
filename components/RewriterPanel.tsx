@@ -76,6 +76,9 @@ export function RewriterPanel() {
   const [email, setEmail] = useState('');
 
   const [repetitionInput, setRepetitionInput] = useState('');
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [copyError, setCopyError] = useState<string | null>(null);
+  const copyResetTimerRef = useRef<number | null>(null);
 
   async function refreshDailyQuota() {
     setQuotaLoading(true);
@@ -118,6 +121,14 @@ export function RewriterPanel() {
     const leadState = window.localStorage.getItem(LEAD_SUBMITTED_KEY) === 'true';
     setLeadSubmitted(leadState);
     void refreshDailyQuota();
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (copyResetTimerRef.current) {
+        window.clearTimeout(copyResetTimerRef.current);
+      }
+    };
   }, []);
 
   const repetitionIssues = useMemo(() => findRepetitionIssues(repetitionInput, role), [repetitionInput, role]);
@@ -177,9 +188,24 @@ export function RewriterPanel() {
     }
   }
 
-  async function handleCopy(textToCopy: string) {
-    await navigator.clipboard.writeText(textToCopy);
-    trackEvent('copy_click', { size: textToCopy.length });
+  async function handleCopy(textToCopy: string, key: string) {
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      setCopyError(null);
+      setCopiedKey(key);
+      trackEvent('copy_click', { size: textToCopy.length });
+
+      if (copyResetTimerRef.current) {
+        window.clearTimeout(copyResetTimerRef.current);
+      }
+      copyResetTimerRef.current = window.setTimeout(() => {
+        setCopiedKey(null);
+      }, 1600);
+    } catch {
+      setCopyError('Copy failed. Please copy manually.');
+      setCopiedKey(null);
+      trackEvent('copy_fail');
+    }
   }
 
   function applyHistoryItem(item: RewriteHistoryItem) {
@@ -324,12 +350,16 @@ export function RewriterPanel() {
                   <p className="rewrite-line">{variation.rewritten_bullet}</p>
                   <p>{variation.why_better}</p>
                   <p className="hint">{variation.quantification_hint}</p>
-                  <button className="btn-secondary" onClick={() => handleCopy(variation.rewritten_bullet)}>
-                    Copy
+                  <button
+                    className="btn-secondary"
+                    onClick={() => handleCopy(variation.rewritten_bullet, `${variation.tone}-${index}`)}
+                  >
+                    {copiedKey === `${variation.tone}-${index}` ? 'Copied' : 'Copy'}
                   </button>
                 </article>
               ))}
             </div>
+            {copyError ? <p className="error-text">{copyError}</p> : null}
           </div>
         ) : null}
       </section>

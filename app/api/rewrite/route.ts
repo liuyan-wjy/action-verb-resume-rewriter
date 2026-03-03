@@ -3,6 +3,7 @@ import { localRewrite, safeParseModelResponse } from '@/lib/rewrite-engine';
 import type { RewriteRequest, RewriteVariation, Tone, UserRole, Seniority } from '@/lib/types';
 import { createClient } from '@/lib/supabase/server';
 import {
+  USER_QUOTA_ERROR,
   consumePurchasedCreditIfAvailable,
   consumeSubscriptionCreditIfAvailable,
   deriveAnonKey,
@@ -177,12 +178,29 @@ export async function POST(request: Request) {
     if (userId) {
       await ensureUserCredits(userId);
 
-      const purchased = await consumePurchasedCreditIfAvailable(userId);
-      if (!purchased.consumed) {
-        const subscription = await consumeSubscriptionCreditIfAvailable(userId);
-        if (!subscription.consumed) {
-          await incrementUserDailyUsage(userId, usageDate, limits.user);
+      let consumed = false;
+
+      try {
+        await incrementUserDailyUsage(userId, usageDate, limits.user);
+        consumed = true;
+      } catch (quotaError) {
+        if (!(quotaError instanceof Error) || quotaError.message !== USER_QUOTA_ERROR) {
+          throw quotaError;
         }
+      }
+
+      if (!consumed) {
+        const subscription = await consumeSubscriptionCreditIfAvailable(userId);
+        consumed = subscription.consumed;
+      }
+
+      if (!consumed) {
+        const purchased = await consumePurchasedCreditIfAvailable(userId);
+        consumed = purchased.consumed;
+      }
+
+      if (!consumed) {
+        throw new Error(USER_QUOTA_ERROR);
       }
     } else {
       const rawIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? null;
