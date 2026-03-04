@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Bebas_Neue, Source_Sans_3 } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 import { NavBar } from '@/components/NavBar';
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/seo';
@@ -15,6 +16,7 @@ const bodyFont = Source_Sans_3({
   variable: '--font-body'
 });
 const ICON_VERSION = '20260303';
+const GA_MEASUREMENT_ID = 'G-919HMY2VRX';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -62,6 +64,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={`${headingFont.variable} ${bodyFont.variable}`}>
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_MEASUREMENT_ID}');
+          `}
+        </Script>
         <div className="background-orb" aria-hidden="true" />
         <NavBar />
         <main className="container page-stack">{children}</main>
