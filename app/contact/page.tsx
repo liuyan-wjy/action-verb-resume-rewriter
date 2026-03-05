@@ -18,7 +18,7 @@ export default function ContactPage() {
     mainEntity: {
       '@type': 'Organization',
       name: SITE_NAME,
-      email: '2471662450@qq.com',
+      email: 'support@resumeactionverbs.com',
       url: SITE_URL
     }
   };
@@ -34,7 +34,7 @@ export default function ContactPage() {
         <div className="stack-sm">
           <h2>Support email</h2>
           <p>
-            <a href="mailto:2471662450@qq.com">2471662450@qq.com</a>
+            <a href="mailto:support@resumeactionverbs.com">support@resumeactionverbs.com</a>
           </p>
 
           <h2>What to include</h2>
