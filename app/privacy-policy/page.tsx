@@ -45,7 +45,7 @@ export default function PrivacyPolicyPage() {
 
           <h2>5. Contact</h2>
           <p>
-            Privacy requests: <a href="mailto:2471662450@qq.com">2471662450@qq.com</a>
+            Privacy requests: <a href="mailto:support@resumeactionverbs.com">support@resumeactionverbs.com</a>
           </p>
         </div>
       </section>

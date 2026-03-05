@@ -21,7 +21,7 @@ export default function HomePage() {
         '@type': 'Organization',
         name: SITE_NAME,
         url: SITE_URL,
-        email: '2471662450@qq.com'
+        email: 'support@resumeactionverbs.com'
       },
       {
         '@type': 'WebSite',

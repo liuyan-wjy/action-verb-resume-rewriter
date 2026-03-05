@@ -15,7 +15,7 @@ export default function AboutPage() {
     '@type': 'Organization',
     name: SITE_NAME,
     url: SITE_URL,
-    email: '2471662450@qq.com'
+    email: 'support@resumeactionverbs.com'
   };
 
   return (
@@ -41,7 +41,7 @@ export default function AboutPage() {
 
           <h2>Reach us</h2>
           <p>
-            Email: <a href="mailto:2471662450@qq.com">2471662450@qq.com</a>
+            Email: <a href="mailto:support@resumeactionverbs.com">support@resumeactionverbs.com</a>
           </p>
         </div>
       </section>
